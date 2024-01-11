@@ -5,8 +5,6 @@ from fabric.api import local, put, run, env
 import os
 
 env.hosts = ["100.25.33.139", "54.146.73.237"]
-env.user = "ubuntu"
-env.key_filename = "~/.ssh/id_rsa"
 
 
 def do_pack():
@@ -18,17 +16,15 @@ def do_pack():
         path = "versions/web_static_{}.tgz".format(
             datetime.now().strftime("%Y%m%d%H%M%S")
         )
-        local("mkdir -p versions")
+        if not os.path.isdir("versions"):
+            local("mkdir -p versions")
         local(f"tar -cvzf {path} web_static")
         return path
-    except Exception:
+    except:
         return None
 
 
 def do_deploy(archive_path):
-    env.hosts = ["100.25.33.139", "54.146.73.237"]
-    env.user = "ubuntu"
-    env.key_filename = "~/.ssh/id_rsa"
     """
     Script that distributes an archive to my web servers
     """
@@ -47,7 +43,7 @@ def do_deploy(archive_path):
         run(f"sudo ln -s {newest_release} /data/web_static/current")
         print("New version deployed!")
         return True
-    except Exception:
+    except:
         return False
 
 
@@ -55,10 +51,7 @@ def deploy():
     """
     Script that creates and distributes an archive to my web servers
     """
-    try:
-        path = do_pack()
-        if path is not None:
-            return do_deploy(path)
+    path = do_pack()
+    if path is None:
         return False
-    except Exception:
-        return False
+    return do_deploy(path)
