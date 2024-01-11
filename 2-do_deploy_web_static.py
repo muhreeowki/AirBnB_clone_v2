@@ -31,32 +31,17 @@ def do_deploy(archive_path):
     """
     Script that distributes an archive to my web servers
     """
-    if not os.path.exists(archive_path):
-        return False
-    name = archive_path.split("/")[1]
-    name = name.split(".")[0]
-    put(local_path=archive_path, remote_path="/tmp/")
-    sudo(f"mkdir -p /data/web_static/releases/{name}/")
-    sudo(
-        "tar -xzf /tmp/{}.tgz -C \
-        /data/web_static/releases/{}".format(
-            name, name
-        )
-    )
-    sudo(f"rm /tmp/{name}.tgz")
-    sudo(
-        "cp -R /data/web_static/releases/{}/web_static/* \
-        /data/web_static/releases/{}/".format(
-            name, name
-        )
-    )
-    sudo(f"rm -rf /data/web_static/releases/{name}/web_static")
-    sudo("rm /data/web_static/current")
-    sudo(
-        "ln -s /data/web_static/releases/{} \
-        /data/web_static/current".format(
-            name
-        )
-    )
-    print("New version deployed!")
-    return True
+    if os.path.exists(archive_path):
+        name = archive_path.split("/")[-1].split(".")[0]
+        newest_release = f"/data/web_static/releases/{name}/"
+        put(local_path=archive_path, remote_path="/tmp/")
+        run(f"sudo mkdir -p {newest_release}")
+        run(f"sudo tar -xzf /tmp/{name}.tgz -C {newest_release}")
+        run(f"sudo rm /tmp/{name}.tgz")
+        run(f"sudo cp -R {newest_release}/web_static/* {newest_release}")
+        run(f"sudo rm -rf {newest_release}/web_static")
+        run("sudo rm /data/web_static/current")
+        run(f"sudo ln -s {newest_release} /data/web_static/current")
+        print("New version deployed!")
+        return True
+    return False
