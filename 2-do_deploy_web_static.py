@@ -33,7 +33,7 @@ def do_deploy(archive_path):
     """
     if os.path.exists(archive_path):
         name = archive_path.split("/")[-1].split(".")[0]
-        newest_release = f"/data/web_static/releases/{name}/"
+        newest_release = f"/data/web_static/releases/{name}"
         put(local_path=archive_path, remote_path="/tmp/")
         run(f"sudo mkdir -p {newest_release}")
         run(f"sudo tar -xzf /tmp/{name}.tgz -C {newest_release}")
