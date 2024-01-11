@@ -7,17 +7,24 @@ import os
 env.hosts = ["100.25.33.139", "54.146.73.237"]
 env.user = "ubuntu"
 
+global latest_archive
+latest_archive = None
 
 def do_pack():
     """
     Script that generates a .tgz archive
     from the contents of the web_static folder
     """
-    path = f"versions/web_static_{datetime.now().strftime("%Y%m%d%H%M%S")}.tgz"
-    if not os.path.isdir("versions"):
-        local("mkdir versions")
-    local(f"tar -cvzf {path} web_static")
-    return path
+    global latest_archive
+    if latest_archive is None:
+        path = f"versions/web_static_{datetime.now().strftime("%Y%m%d%H%M%S")}.tgz"
+        if not os.path.isdir("versions"):
+            if local("mkdir versions").failed:
+                return None
+        if local(f"tar -cvzf {path} web_static").failed:
+            return None
+        latest_archive = path
+    return latest_archive
 
 
 def do_deploy(archive_path):
@@ -47,6 +54,7 @@ def deploy():
     """
     Script that creates and distributes an archive to my web servers
     """
+    
     path = do_pack()
     if path is None:
         return False

@@ -7,11 +7,16 @@ apt-get -y install nginx
 ufw allow 'Nginx HTTP'
 
 # Create necessary folders
-mkdir -p /data/web_static/releases/test/
-mkdir -p /data/web_static/shared/
+mkdir -p /data/web_static/releases/test
+mkdir -p /data/web_static/shared
+mkdir -p /var/www/html
+touch /var/www/html/index.html
 
-# Create html file
-echo "Hello World!" >/data/web_static/releases/test/index.html
+# Create html files
+echo "God is Good!" >/data/web_static/releases/test/index.html
+echo "God is Good!" >/var/www/html/index.html
+# Setup 404 html file
+echo "Ceci n'est pas une page" >/var/www/html/404.html
 
 # Create symbolic link
 ln -sF /data/web_static/releases/test/ /data/web_static/current
