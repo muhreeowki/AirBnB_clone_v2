@@ -14,24 +14,27 @@ def do_pack():
     Script that generates a .tgz archive
     from the contents of the web_static folder
     """
-    now = datetime.now().strftime("%Y%m%d%H%M%S")
-    if not os.path.isdir("versions"):
-        local("mkdir versions")
-    result = local(
-        "tar -cvzf \
-        versions/web_static_{}.tgz \
-        web_static".format(
-            now
+    try:
+        path = "versions/web_static_{}.tgz".format(
+            datetime.now().strftime("%Y%m%d%H%M%S")
         )
-    )
-    return "versions/web_static_{}.tgz".format(now) if result else None
+        local("mkdir -p versions")
+        local(f"tar -cvzf {path} web_static")
+        return path
+    except Exception:
+        return None
 
 
 def do_deploy(archive_path):
+    env.hosts = ["100.25.33.139", "54.146.73.237"]
+    env.user = "ubuntu"
+    env.key_filename = "~/.ssh/id_rsa"
     """
     Script that distributes an archive to my web servers
     """
-    if os.path.exists(archive_path):
+    if not os.path.exists(archive_path):
+        return False
+    try:
         name = archive_path.split("/")[-1].split(".")[0]
         newest_release = f"/data/web_static/releases/{name}"
         put(local_path=archive_path, remote_path="/tmp/")
@@ -44,4 +47,18 @@ def do_deploy(archive_path):
         run(f"sudo ln -s {newest_release} /data/web_static/current")
         print("New version deployed!")
         return True
-    return False
+    except Exception:
+        return False
+
+
+def deploy():
+    """
+    Script that creates and distributes an archive to my web servers
+    """
+    try:
+        path = do_pack()
+        if path is not None:
+            return do_deploy(path)
+        return False
+    except Exception:
+        return False
