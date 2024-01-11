@@ -10,6 +10,7 @@ env.user = "ubuntu"
 global latest_archive
 latest_archive = None
 
+
 def do_pack():
     """
     Script that generates a .tgz archive
@@ -17,12 +18,12 @@ def do_pack():
     """
     global latest_archive
     if latest_archive is None:
-        path = f"versions/web_static_{datetime.now().strftime("%Y%m%d%H%M%S")}.tgz"
+        path = "versions/web_static_{}.tgz".format(
+            datetime.now().strftime("%Y%m%d%H%M%S")
+        )
         if not os.path.isdir("versions"):
-            if local("mkdir versions").failed:
-                return None
-        if local(f"tar -cvzf {path} web_static").failed:
-            return None
+            local("mkdir versions")
+        local(f"tar -cvzf {path} web_static")
         latest_archive = path
     return latest_archive
 
@@ -54,7 +55,6 @@ def deploy():
     """
     Script that creates and distributes an archive to my web servers
     """
-    
     path = do_pack()
     if path is None:
         return False
