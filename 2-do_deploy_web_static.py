@@ -17,7 +17,13 @@ def do_pack():
     now = datetime.now().strftime("%Y%m%d%H%M%S")
     if not os.path.isdir("versions"):
         local("mkdir versions")
-    result = local("tar -cvzf versions/web_static_{}.tgz web_static".format(now))
+    result = local(
+        "tar -cvzf \
+        versions/web_static_{}.tgz \
+        web_static".format(
+            now
+        )
+    )
     return "versions/web_static_{}.tgz".format(now) if result else None
 
 
