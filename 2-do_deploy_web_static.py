@@ -41,14 +41,16 @@ def do_deploy(archive_path):
             )
             sudo(f"rm /tmp/{name}.tgz")
             sudo(
-                "cp -R /data/web_static/releases/{}/web_static/* /data/web_static/releases/{}/".format(
+                "cp -R /data/web_static/releases/{}/web_static/* \
+                /data/web_static/releases/{}/".format(
                     name, name
                 )
             )
             sudo(f"rm -rf /data/web_static/releases/{name}/web_static")
             sudo("rm /data/web_static/current")
             sudo(
-                "ln -s /data/web_static/releases/{} /data/web_static/current".format(
+                "ln -s /data/web_static/releases/{} \
+                /data/web_static/current".format(
                     name
                 )
             )
