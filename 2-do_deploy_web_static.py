@@ -31,7 +31,9 @@ def do_deploy(archive_path):
     """
     Script that distributes an archive to my web servers
     """
-    if os.path.exists(archive_path):
+    if not os.path.exists(archive_path):
+        return False
+    try:
         name = archive_path.split("/")[-1].split(".")[0]
         newest_release = f"/data/web_static/releases/{name}"
         put(local_path=archive_path, remote_path="/tmp/")
@@ -44,4 +46,5 @@ def do_deploy(archive_path):
         run(f"sudo ln -s {newest_release} /data/web_static/current")
         print("New version deployed!")
         return True
-    return False
+    except Exception:
+        return False
