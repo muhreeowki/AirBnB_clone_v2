@@ -25,19 +25,19 @@ def do_deploy(archive_path):
     """
     Script that distributes an archive to my web servers
     """
-    if not os.path.exists(archive_path):
+    if os.path.exists(archive_path) is False:
         return False
     try:
         name = archive_path.split("/")[-1].split(".")[0]
         newest_release = f"/data/web_static/releases/{name}"
         put(local_path=archive_path, remote_path="/tmp/")
-        run(f"sudo mkdir -p {newest_release}")
-        run(f"sudo tar -xzf /tmp/{name}.tgz -C {newest_release}")
+        run(f"sudo mkdir -p {newest_release}/")
+        run(f"sudo tar -xzf /tmp/{name}.tgz -C {newest_release}/")
         run(f"sudo rm /tmp/{name}.tgz")
-        run(f"sudo cp -R {newest_release}/web_static/* {newest_release}")
+        run(f"sudo cp -R {newest_release}/web_static/* {newest_release}/")
         run(f"sudo rm -rf {newest_release}/web_static")
         run("sudo rm -rf /data/web_static/current")
-        run(f"sudo ln -s {newest_release} /data/web_static/current")
+        run(f"sudo ln -s {newest_release}/ /data/web_static/current")
         print("New version deployed!")
         return True
     except Exception:
