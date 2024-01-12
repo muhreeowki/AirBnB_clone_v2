@@ -18,13 +18,11 @@ def do_pack():
     """
     global latest_archive
     if latest_archive is None:
-        path = "versions/web_static_{}.tgz".format(
-            datetime.now().strftime("%Y%m%d%H%M%S")
-        )
+        now = datetime.now().strftime("%Y%m%d%H%M%S")
         if not os.path.isdir("versions"):
             local("mkdir versions")
-        local(f"tar -cvzf {path} web_static")
-        latest_archive = path
+        local("tar -cvzf versions/web_static_{}.tgz web_static".format(now))
+        latest_archive = "versions/web_static_{}.tgz".format(now)
     return latest_archive
 
 
