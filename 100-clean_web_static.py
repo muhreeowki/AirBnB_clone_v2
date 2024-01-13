@@ -59,16 +59,18 @@ def deploy():
     return do_deploy(path)
 
 
-def do_clean():
+def do_clean(number=0):
     """
-    Script that generates a .tgz archive
-    from the contents of the web_static folder
+    Script that deletes out-of-date archives
     """
-    global latest_archive
-    if latest_archive is None:
-        now = datetime.now().strftime("%Y%m%d%H%M%S")
-        if not os.path.isdir("versions"):
-            local("mkdir versions")
-        local("tar -cvzf versions/web_static_{}.tgz web_static".format(now))
-        latest_archive = "versions/web_static_{}.tgz".format(now)
-    return latest_archive
+
+    number = int(number)
+
+    if number == 0:
+        number = 2
+    else:
+        number += 1
+
+    local("cd versions ; ls -t | tail -n +{} | xargs rm -rf".format(number))
+    path = "/data/web_static/releases"
+    run("cd {} ; ls -t | tail -n +{} | xargs rm -rf".format(path, number))
