@@ -13,11 +13,14 @@ def do_pack():
     Script that generates a .tgz archive
     from the contents of the web_static folder
     """
-    now = datetime.now().strftime("%Y%m%d%H%M%S")
-    if not os.path.isdir("versions"):
-        local("mkdir versions")
-    local("tar -cvzf versions/web_static_{}.tgz web_static".format(now))
-    return "versions/web_static_{}.tgz".format(now)
+    try:
+        now = datetime.now().strftime("%Y%m%d%H%M%S")
+        if not os.path.isdir("versions"):
+            local("mkdir versions")
+        local("tar -cvzf versions/web_static_{}.tgz web_static".format(now))
+        return "versions/web_static_{}.tgz".format(now)
+    except Exception:
+        return None
 
 
 def do_deploy(archive_path):
@@ -45,7 +48,7 @@ def do_deploy(archive_path):
 
 def deploy():
     """
-    Script that creates and distributes an archive to my web servers
+    Script that creates and distributes an archive to your web servers
     """
     try:
         path = do_pack()
