@@ -47,7 +47,8 @@ def deploy():
     """
     Script that creates and distributes an archive to my web servers
     """
-    path = do_pack()
-    if path is None:
+    try:
+        path = do_pack()
+        return do_deploy(path)
+    except Exception:
         return False
-    return do_deploy(path)
