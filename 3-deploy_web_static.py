@@ -5,6 +5,10 @@ from fabric.api import local, put, run, env
 import os
 
 env.hosts = ["54.174.43.223", "18.235.255.170"]
+env.user = "ubuntu"
+
+global latest_archive
+latest_archive = None
 
 
 def do_pack():
@@ -12,14 +16,17 @@ def do_pack():
     Script that generates a .tgz archive
     from the contents of the web_static folder
     """
-    now = datetime.now().strftime("%Y%m%d%H%M%S")
-    filename = "versions/web_static_{}.tgz".format(now)
-    if os.path.isdir("versions") is False:
-        if local("mkdir versions").failed is True:
-            return None
-    if local("tar -cvzf {} web_static".format(filename)).failed is True:
+    try:
+        global latest_archive
+        if latest_archive is None:
+            now = datetime.now().strftime("%Y%m%d%H%M%S")
+            if not os.path.isdir("versions"):
+                local("mkdir versions")
+            local("tar -cvzf versions/web_static_{}.tgz web_static".format(now))
+            latest_archive = "versions/web_static_{}.tgz".format(now)
+        return latest_archive
+    except Exception:
         return None
-    return filename
 
 
 def do_deploy(archive_path):
