@@ -20,10 +20,11 @@ def do_pack():
         global latest_archive
         if latest_archive is None:
             now = datetime.now().strftime("%Y%m%d%H%M%S")
+            filename = "versions/web_static_{}.tgz".format(now)
             if not os.path.isdir("versions"):
                 local("mkdir versions")
-            local("tar -cvzf versions/web_static_{}.tgz web_static".format(now))
-            latest_archive = "versions/web_static_{}.tgz".format(now)
+            local("tar -cvzf {} web_static".format(filename))
+            latest_archive = filename
         return latest_archive
     except Exception:
         return None
