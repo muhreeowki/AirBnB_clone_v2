@@ -34,15 +34,15 @@ def do_deploy(archive_path):
         return False
     try:
         filename = archive_path.split("/")[-1].split(".")[0]
-        release_path = f"/data/web_static/releases/{filename}"
-        put(local_path=archive_path, remote_path="/tmp/")
-        run(f"mkdir -p {release_path}/")
-        run(f"tar -xzf /tmp/{filename}.tgz -C {release_path}/")
-        run(f"rm /tmp/{filename}.tgz")
-        run(f"cp -R {release_path}/web_static/* {release_path}/")
-        run(f"rm -rf {release_path}/web_static")
+        release_path = "/data/web_static/releases/{}".format(filename)
+        put(archive_path, "/tmp/")
+        run("mkdir -p {}/".format(release_path))
+        run("tar -xzf /tmp/{}.tgz -C {}/".format(filename, release_path))
+        run("rm /tmp/{}.tgz".format(filename))
+        run("mv {0}/web_static/* {0}".format(release_path))
+        run("rm -rf {}/web_static".format(release_path))
         run("rm -rf /data/web_static/current")
-        run(f"ln -s {release_path}/ /data/web_static/current")
+        run("ln -s {}/ /data/web_static/current".format(release_path))
         print("New version deployed!")
         return True
     except Exception:
