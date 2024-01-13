@@ -7,17 +7,23 @@ import os
 env.hosts = ["54.174.43.223", "18.235.255.170"]
 env.user = "ubuntu"
 
+global latest_archive
+latest_archive = None
+
 
 def do_pack():
     """
     Script that generates a .tgz archive
     from the contents of the web_static folder
     """
-    now = datetime.now().strftime("%Y%m%d%H%M%S")
-    if not os.path.isdir("versions"):
-        local("mkdir versions")
-    local("tar -cvzf versions/web_static_{}.tgz web_static".format(now))
-    return "versions/web_static_{}.tgz".format(now)
+    global latest_archive
+    if latest_archive is None:
+        now = datetime.now().strftime("%Y%m%d%H%M%S")
+        if not os.path.isdir("versions"):
+            local("mkdir versions")
+        local("tar -cvzf versions/web_static_{}.tgz web_static".format(now))
+        latest_archive = "versions/web_static_{}.tgz".format(now)
+    return latest_archive
 
 
 def do_deploy(archive_path):
@@ -41,3 +47,28 @@ def do_deploy(archive_path):
         return True
     except Exception:
         return False
+
+
+def deploy():
+    """
+    Script that creates and distributes an archive to my web servers
+    """
+    path = do_pack()
+    if path is None:
+        return False
+    return do_deploy(path)
+
+
+def do_clean():
+    """
+    Script that generates a .tgz archive
+    from the contents of the web_static folder
+    """
+    global latest_archive
+    if latest_archive is None:
+        now = datetime.now().strftime("%Y%m%d%H%M%S")
+        if not os.path.isdir("versions"):
+            local("mkdir versions")
+        local("tar -cvzf versions/web_static_{}.tgz web_static".format(now))
+        latest_archive = "versions/web_static_{}.tgz".format(now)
+    return latest_archive
